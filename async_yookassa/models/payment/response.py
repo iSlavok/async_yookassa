@@ -3,7 +3,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
-from async_yookassa.enums.payment import PaymentStatus
+from async_yookassa.enums.payment import PaymentStatus, ReceiptRegistrationStatus
 from async_yookassa.models.base import ModelConfigBase
 from async_yookassa.models.list_options_base import ListOptionsBase
 from async_yookassa.models.payment.amount import Amount
@@ -37,7 +37,7 @@ class PaymentResponse(ModelConfigBase):
     refunded_amount: Amount | None = None
     paid: bool
     refundable: bool
-    receipt_registration: PaymentStatus | None = None
+    receipt_registration: ReceiptRegistrationStatus | None = None
     metadata: dict[str, Any] | None = None
     cancellation_details: CancellationDetails | None = None
     authorization_details: AuthorizationDetails | None = None

@@ -1,9 +1,7 @@
 from datetime import datetime
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import Field
-
-from async_yookassa.enums.payment import PaymentStatus
 from async_yookassa.models.base import ModelConfigBase
 from async_yookassa.models.invoice.cart import Cart
 from async_yookassa.models.invoice.delivery_method import DeliveryMethodResponseUnion
@@ -13,7 +11,7 @@ from async_yookassa.models.invoice.payment_details import PaymentDetails
 
 class InvoiceResponse(ModelConfigBase):
     id: str = Field(min_length=39, max_length=39)
-    status: PaymentStatus
+    status: Literal["pending", "succeeded", "canceled"]
     cart: list[Cart]
     delivery_method: DeliveryMethodResponseUnion | None = None
     payment_details: PaymentDetails | None = None

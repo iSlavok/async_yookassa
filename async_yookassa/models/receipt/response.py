@@ -1,8 +1,7 @@
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, Field
-
-from async_yookassa.enums.payment import PaymentStatus
 from async_yookassa.enums.receipt_type import ReceiptType
 from async_yookassa.models.base import ModelConfigBase
 from async_yookassa.models.payment.receipts.payment_subject_industry_details import (
@@ -24,7 +23,7 @@ class ReceiptResponse(ModelConfigBase):
     type: ReceiptType
     payment_id: str | None = None
     refund_id: str | None = None
-    status: PaymentStatus
+    status: Literal["pending", "succeeded", "canceled"]
     fiscal_document_number: str | None = None
     fiscal_storage_number: str | None = None
     fiscal_attribute: str | None = None

@@ -7,7 +7,7 @@ from async_yookassa.models.payment_method.holder import HolderRequest
 
 class PaymentMethodRequest(ModelConfigBase):
     type: PaymentMethodType
-    card: CardRequest
-    holder: HolderRequest
+    card: CardRequest | None = None
+    holder: HolderRequest | None = None
     client_ip: str | None = None
-    confirmation: RedirectConfirmationRequest
+    confirmation: RedirectConfirmationRequest | None = None

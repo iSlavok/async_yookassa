@@ -110,11 +110,11 @@ class ElectronicCertificatePaymentMethodBase(BankCardPaymentMethod):
 
 
 class ElectronicCertificatePaymentMethodResponse(ElectronicCertificatePaymentMethodBase):
-    articles: ArticleResponse | None = None
+    articles: list[ArticleResponse] | None = None
 
 
 class ElectronicCertificatePaymentMethodRefund(ElectronicCertificatePaymentMethodBase):
-    articles: ArticleRefund | None = None
+    articles: list[ArticleRefund] | None = None
 
 
 class YooMoneyPaymentMethod(PaymentMethodBase):
@@ -147,7 +147,14 @@ PaymentMethodUnion = Annotated[
     Field(discriminator="type"),
 ]
 
+class SBPRefundMethod(BaseModel):
+    type: Literal[PaymentMethodType.sbp]
+    sbp_operation_id: str | None = None
+
+    model_config = ConfigDict(use_enum_values=True)
+
+
 PaymentMethodRefundUnion = Annotated[
-    Union[SBPPaymentMethodResponse, ElectronicCertificatePaymentMethodRefund],
+    Union[SBPRefundMethod, ElectronicCertificatePaymentMethodRefund],
     Field(discriminator="type"),
 ]

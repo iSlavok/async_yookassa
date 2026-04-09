@@ -35,7 +35,7 @@ class ReceiptRequest(BaseModel):
     additional_user_props: AdditionalUserProps | None = None
     receipt_industry_details: list[PaymentSubjectIndustryDetails] | None = None
     receipt_operational_details: ReceiptOperationalDetails | None = None
-    settlements: list[SettlementReceipt] | None = None
+    settlements: list[SettlementReceipt]
     on_behalf_of: str | None = None
 
 

@@ -15,3 +15,8 @@ class Deal(DealBase):
 
 class DealRefund(BaseModel):
     refund_settlements: list[Settlement]
+
+
+class DealRefundResponse(BaseModel):
+    id: str
+    refund_settlements: list[Settlement]

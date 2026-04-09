@@ -15,6 +15,6 @@ class MeResponse(ModelConfigBase):
     fiscalization_enabled: bool | None = None
     payment_methods: list[PaymentMethodType] | None = None
     itn: str | None = Field(min_length=1, max_length=20, default=None)
-    payout_methods: list[PayoutMethodsEnum]
+    payout_methods: list[PayoutMethodsEnum] | None = None
     name: str | None = None
     payout_balance: Amount | None = None

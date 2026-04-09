@@ -9,7 +9,7 @@ from async_yookassa.models.payment.amount import Amount
 
 class PaymentOrderPeriod(ModelConfigBase):
     month: int = Field(ge=1, le=12)
-    year: int = Field(ge=1000, le=3000)
+    year: int = Field(ge=1920, le=2050)
 
 
 class PaymentOrderRecipientBank(ModelConfigBase):

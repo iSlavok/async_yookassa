@@ -14,22 +14,26 @@ class PaymentMethodBase(ModelConfigBase):
     type: Literal[PaymentMethodType.sber_loan, PaymentMethodType.sbp]
 
 
-class PhoneRequiredPaymentMethod(PaymentMethodBase):
+class PhoneRequiredPaymentMethod(ModelConfigBase):
     type: Literal[PaymentMethodType.mobile_balance]
     phone: str
 
 
-class BankCardPaymentMethod(PaymentMethodBase):
+class BankCardPaymentMethod(ModelConfigBase):
     type: Literal[PaymentMethodType.bank_card]
     card: CardRequest | None = None
 
 
-class PhoneNotRequiredPaymentMethod(PaymentMethodBase):
-    type: Literal[PaymentMethodType.cash, PaymentMethodType.sber_bnpl]
+class PhoneNotRequiredPaymentMethod(ModelConfigBase):
+    type: Literal[PaymentMethodType.cash, PaymentMethodType.sber_bnpl, PaymentMethodType.sberbank]
     phone: str | None = None
 
 
-class B2BSberbankPaymentMethod(PaymentMethodBase):
+class SimplePaymentMethod(ModelConfigBase):
+    type: Literal[PaymentMethodType.tinkoff_bank, PaymentMethodType.yoo_money]
+
+
+class B2BSberbankPaymentMethod(ModelConfigBase):
     type: Literal[PaymentMethodType.b2b_sberbank]
     payment_purpose: str = Field(max_length=210)
     vat_data: VatDataUnion
@@ -41,6 +45,7 @@ PaymentMethodData = Annotated[
         PhoneRequiredPaymentMethod,
         BankCardPaymentMethod,
         PhoneNotRequiredPaymentMethod,
+        SimplePaymentMethod,
         B2BSberbankPaymentMethod,
     ],
     Field(discriminator="type"),

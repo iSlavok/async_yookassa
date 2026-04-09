@@ -23,8 +23,8 @@ class PaymentData(ModelConfigBase):
     description: str | None = Field(max_length=128, default=None)
     receipt: Receipt | None = None
     recipient: Recipient | None = None
-    save_payment_method: bool = False
-    capture: bool = False
+    save_payment_method: bool | None = None
+    capture: bool | None = None
     client_ip: str | None = None
     metadata: dict[str, Any] | None = None
 

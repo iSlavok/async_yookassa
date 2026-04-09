@@ -14,4 +14,4 @@ class PaymentMethodResponse(ModelConfigBase):
     status: PaymentMethodStatus
     holder: HolderResponse
     title: str | None = None
-    confirmation: RedirectConfirmationResponse
+    confirmation: RedirectConfirmationResponse | None = None

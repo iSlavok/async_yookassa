@@ -31,13 +31,14 @@ class ReceiptItemBase(ModelConfigBase):
     payment_subject: PaymentSubjectEnum | None = None
     payment_mode: PaymentModeEnum | None = None
     country_of_origin_code: str | None = Field(min_length=2, max_length=2, default=None)
-    customs_declaration_number: str | None = Field(max_length=32, default=None)
+    customs_declaration_number: str | None = Field(min_length=1, max_length=32, default=None)
     excise: str | None = None
     product_code: str | None = None
     planned_status: int | None = Field(ge=1, le=6, default=None)
     mark_code_info: MarkCodeInfo | None = None
     mark_mode: str | None = None
-    payment_subject_industry_details: PaymentSubjectIndustryDetails | None = None
+    payment_subject_industry_details: list[PaymentSubjectIndustryDetails] | None = None
+    additional_payment_subject_props: str | None = Field(max_length=64, default=None)
 
     @field_validator("quantity", mode="before")
     def validate_quantity(cls, value: Any) -> str:

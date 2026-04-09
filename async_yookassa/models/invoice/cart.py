@@ -1,7 +1,7 @@
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 from async_yookassa.models.payment.amount import Amount
 
@@ -10,15 +10,13 @@ class Cart(BaseModel):
     description: str = Field(min_length=1, max_length=128)
     price: Amount
     discount_price: Amount | None = None
-    quantity: int
-
-    model_config = ConfigDict(json_encoders={Decimal: float})
+    quantity: float
 
     @field_validator("quantity", mode="before")
-    def validate_quantity(cls, value: Any) -> Decimal:
+    def validate_quantity(cls, value: Any) -> float:
         """
         Валидация количества.
-        Возвращает Decimal, который в JSON станет number (числом).
+        Возвращает float, который в JSON станет number (числом).
         """
         try:
             d_val = Decimal(str(value))
@@ -38,4 +36,4 @@ class Cart(BaseModel):
             if exponent < -3:
                 raise ValueError("Quantity allows max 3 decimal places")
 
-        return normalized
+        return float(normalized)

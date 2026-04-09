@@ -5,6 +5,7 @@ from pydantic import Field
 from async_yookassa.enums.payout import PayoutTypeEnum
 from async_yookassa.models.base import ModelConfigBase
 from async_yookassa.models.payment.methods.card import (
+    CardBase,
     CardResponseBase,
 )
 
@@ -14,8 +15,9 @@ class CardPayoutDestination(ModelConfigBase):
     card: CardResponseBase | None = None
 
 
-class CardPayoutDestinationRequest(CardPayoutDestination):
-    card: CardResponseBase
+class CardPayoutDestinationRequest(ModelConfigBase):
+    type: Literal[PayoutTypeEnum.bank_card]
+    card: CardBase
 
 
 class SBPPayoutDestinationRequest(ModelConfigBase):
@@ -25,6 +27,7 @@ class SBPPayoutDestinationRequest(ModelConfigBase):
 
 
 class SBPPayoutDestination(SBPPayoutDestinationRequest):
+    sbp_operation_id: str | None = None
     recipient_checked: bool
 
 

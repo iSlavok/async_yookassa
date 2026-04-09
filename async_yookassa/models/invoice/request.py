@@ -10,8 +10,8 @@ from async_yookassa.models.payment.request import PaymentData
 
 class InvoiceRequest(BaseModel):
     payment_data: PaymentData
-    cart: Cart
-    delivery_method_data: DeliveryMethodRequestUnion
+    cart: list[Cart]
+    delivery_method_data: DeliveryMethodRequestUnion | None = None
     expires_at: datetime
     locale: str | None = None
     description: str | None = Field(max_length=128, default=None)

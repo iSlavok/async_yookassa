@@ -3,7 +3,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-from async_yookassa.enums.payment import PaymentStatus
+from typing import Literal
 from async_yookassa.models.payment.amount import Amount
 from async_yookassa.models.payment.cancellation_details import CancellationDetails
 from async_yookassa.models.payment.deal import DealBase
@@ -14,7 +14,7 @@ from async_yookassa.models.payout.receipt_data import ReceiptDataResponse
 class PayoutResponse(BaseModel):
     id: str = Field(min_length=36, max_length=50)
     amount: Amount
-    status: PaymentStatus
+    status: Literal["pending", "succeeded", "canceled"]
     payout_destination: PayoutDestinationUnion
     description: str | None = Field(max_length=128, default=None)
     created_at: datetime
