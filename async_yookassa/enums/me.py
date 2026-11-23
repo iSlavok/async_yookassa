@@ -1,12 +1,12 @@
-from enum import Enum
+from async_yookassa.enums.base import OpenStrEnum
 
 
-class MeStatusEnum(str, Enum):
+class MeStatusEnum(OpenStrEnum):
     enabled = "enabled"
     disabled = "disabled"
 
 
-class PayoutMethodsEnum(str, Enum):
+class PayoutMethodsEnum(OpenStrEnum):
     bank_card = "bank_card"
     yoo_money = "yoo_money"
     sbp = "sbp"

@@ -38,7 +38,7 @@ class DealService(BaseService):
             raise ValueError("Invalid deal_id value")
 
         response = await self._get(f"{self.BASE_PATH}/{deal_id}")
-        return DealResponse(**response)
+        return self._parse(DealResponse, response)
 
     async def create(
         self,
@@ -66,7 +66,7 @@ class DealService(BaseService):
             body=body,
             idempotency_key=idempotency_key,
         )
-        return DealResponse(**response)
+        return self._parse(DealResponse, response)
 
     async def list(
         self,
@@ -83,4 +83,4 @@ class DealService(BaseService):
             params = params.model_dump(mode="json", by_alias=True, exclude_none=True)
 
         response = await self._get(self.BASE_PATH, query_params=params)
-        return DealListResponse(**response)
+        return self._parse(DealListResponse, response)

@@ -26,4 +26,4 @@ class SBPBanksService(BaseService):
         """
 
         response = await self._get(self.BASE_PATH)
-        return SbpBankListResponse(**response)
+        return self._parse(SbpBankListResponse, response)

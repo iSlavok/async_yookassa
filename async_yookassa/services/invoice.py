@@ -35,7 +35,7 @@ class InvoiceService(BaseService):
             raise ValueError("Invalid invoice_id value")
 
         response = await self._get(f"{self.BASE_PATH}/{invoice_id}")
-        return InvoiceResponse(**response)
+        return self._parse(InvoiceResponse, response)
 
     async def create(
         self,
@@ -61,4 +61,4 @@ class InvoiceService(BaseService):
             body=body,
             idempotency_key=idempotency_key,
         )
-        return InvoiceResponse(**response)
+        return self._parse(InvoiceResponse, response)

@@ -8,4 +8,4 @@ from async_yookassa.models.payment.three_d_secure import (
 class AuthorizationDetails(BaseModel):
     rrn: str | None = None
     auth_code: str | None = None
-    three_d_secure: ThreeDSecure
+    three_d_secure: ThreeDSecure | None = None

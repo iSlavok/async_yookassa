@@ -1,7 +1,6 @@
 from datetime import datetime
 from typing import Any
 
-from pydantic import Field
 
 from async_yookassa.enums.personal_data_enums import (
     PersonalDataStatusEnum,
@@ -12,7 +11,7 @@ from async_yookassa.models.payment.cancellation_details import CancellationDetai
 
 
 class PersonalDataResponse(ModelConfigBase):
-    id: str = Field(min_length=36, max_length=50)
+    id: str
     type: PersonalDataTypeEnum
     status: PersonalDataStatusEnum
     cancellation_details: CancellationDetails | None = None

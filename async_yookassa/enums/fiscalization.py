@@ -1,7 +1,7 @@
-from enum import Enum
+from async_yookassa.enums.base import OpenStrEnum
 
 
-class FiscalizationProviderEnum(str, Enum):
+class FiscalizationProviderEnum(OpenStrEnum):
     avanpost = "avanpost"
     a_qsi = "a_qsi"
     atol = "atol"
@@ -16,3 +16,4 @@ class FiscalizationProviderEnum(str, Enum):
     modul_kassa = "modul_kassa"
     rocket = "rocket"
     shtrih_m = "shtrih_m"
+    yoo_receipt = "yoo_receipt"

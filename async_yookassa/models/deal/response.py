@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from async_yookassa.enums.deal_enums import DealFeeMomentEnum, DealStatusEnum, DealTypeEnum
 from async_yookassa.models.base import ModelConfigBase
@@ -12,7 +12,7 @@ class DealResponse(ModelConfigBase):
     type: DealTypeEnum
     id: str
     fee_moment: DealFeeMomentEnum
-    description: str | None = Field(max_length=128, default=None)
+    description: str | None = None
     balance: Amount
     payout_balance: Amount
     status: DealStatusEnum

@@ -2,8 +2,10 @@
 
 from enum import StrEnum
 
+from async_yookassa.enums.base import OpenStrEnum
 
-class PaymentStatus(StrEnum):
+
+class PaymentStatus(OpenStrEnum):
     """Статус платежа."""
 
     pending = "pending"
@@ -12,7 +14,7 @@ class PaymentStatus(StrEnum):
     waiting_for_capture = "waiting_for_capture"
 
 
-class ReceiptRegistrationStatus(StrEnum):
+class ReceiptRegistrationStatus(OpenStrEnum):
     """Статус регистрации чека."""
 
     pending = "pending"
@@ -20,7 +22,7 @@ class ReceiptRegistrationStatus(StrEnum):
     canceled = "canceled"
 
 
-class PaymentMethodType(StrEnum):
+class PaymentMethodType(OpenStrEnum):
     """Тип платёжного метода."""
 
     sber_loan = "sber_loan"
@@ -41,9 +43,10 @@ class PaymentMethodType(StrEnum):
     tinkoff_bank = "tinkoff_bank"
     wechat = "wechat"
     webmoney = "webmoney"
+    alfa_pay = "alfa_pay"
 
 
-class PaymentMethodStatus(StrEnum):
+class PaymentMethodStatus(OpenStrEnum):
     """Статус сохранённого платёжного метода."""
 
     pending = "pending"
@@ -51,7 +54,7 @@ class PaymentMethodStatus(StrEnum):
     inactive = "inactive"
 
 
-class ConfirmationType(StrEnum):
+class ConfirmationType(OpenStrEnum):
     """Тип подтверждения платежа."""
 
     embedded = "embedded"
@@ -61,15 +64,17 @@ class ConfirmationType(StrEnum):
     redirect = "redirect"
 
 
-class CancellationParty(StrEnum):
+class CancellationParty(OpenStrEnum):
     """Инициатор отмены платежа."""
 
     merchant = "merchant"
     payment_network = "payment_network"
     yoo_money = "yoo_money"
+    refund_network = "refund_network"
+    payout_network = "payout_network"
 
 
-class CancellationReason(StrEnum):
+class CancellationReason(OpenStrEnum):
     """Причина отмены платежа."""
 
     three_d_secure_failed = "3d_secure_failed"
@@ -104,9 +109,15 @@ class CancellationReason(StrEnum):
     periodic_limit_exceeded = "periodic_limit_exceeded"
     recipient_check_failed = "recipient_check_failed"
     recipient_not_found = "recipient_not_found"
+    loan_declined = "loan_declined"
+    loan_declined_by_payer = "loan_declined_by_payer"
+    loan_application_expired = "loan_application_expired"
+    payment_expired = "payment_expired"
+    self_employed_annual_limit_exceeded = "self_employed_annual_limit_exceeded"
+    expired_by_timeout = "expired_by_timeout"
 
 
-class CardType(StrEnum):
+class CardType(OpenStrEnum):
     """Тип банковской карты."""
 
     mastercard = "MasterCard"
@@ -126,7 +137,7 @@ class CardType(StrEnum):
     unknown = "Unknown"
 
 
-class CardSource(StrEnum):
+class CardSource(OpenStrEnum):
     """Источник данных банковской карты."""
 
     mir_pay = "mir_pay"

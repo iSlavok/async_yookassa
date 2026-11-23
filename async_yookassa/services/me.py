@@ -31,4 +31,4 @@ class MeService(BaseService):
             query_params = {"on_behalf_of": on_behalf_of}
 
         response = await self._get(f"{self.BASE_PATH}", query_params=query_params)
-        return MeResponse(**response)
+        return self._parse(MeResponse, response)

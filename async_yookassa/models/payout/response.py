@@ -1,9 +1,9 @@
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict
 
-from typing import Literal
+from async_yookassa.enums.status import OperationStatus
 from async_yookassa.models.payment.amount import Amount
 from async_yookassa.models.payment.cancellation_details import CancellationDetails
 from async_yookassa.models.payment.deal import DealBase
@@ -12,11 +12,11 @@ from async_yookassa.models.payout.receipt_data import ReceiptDataResponse
 
 
 class PayoutResponse(BaseModel):
-    id: str = Field(min_length=36, max_length=50)
+    id: str
     amount: Amount
-    status: Literal["pending", "succeeded", "canceled"]
+    status: OperationStatus
     payout_destination: PayoutDestinationUnion
-    description: str | None = Field(max_length=128, default=None)
+    description: str | None = None
     created_at: datetime
     succeeded_at: datetime | None = None
     deal: DealBase | None = None
@@ -25,3 +25,5 @@ class PayoutResponse(BaseModel):
     cancellation_details: CancellationDetails | None = None
     metadata: dict[str, Any] | None = None
     test: bool
+
+    model_config = ConfigDict(use_enum_values=True)

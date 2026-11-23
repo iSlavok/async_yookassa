@@ -1,9 +1,10 @@
 from datetime import datetime
-from typing import Any, Literal
+from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from async_yookassa.enums.payment import ReceiptRegistrationStatus
+from async_yookassa.enums.status import OperationStatus
 from async_yookassa.models.base import ModelConfigBase
 from async_yookassa.models.payment.amount import Amount
 from async_yookassa.models.payment.cancellation_details import CancellationDetails
@@ -17,14 +18,14 @@ class RefundAuthorizationDetails(ModelConfigBase):
 
 
 class RefundResponse(ModelConfigBase):
-    id: str = Field(min_length=36, max_length=36)
-    payment_id: str = Field(min_length=36, max_length=36)
-    status: Literal["pending", "succeeded", "canceled"]
+    id: str
+    payment_id: str
+    status: OperationStatus
     cancellation_details: CancellationDetails | None = None
     receipt_registration: ReceiptRegistrationStatus | None = None
     created_at: datetime
     amount: Amount
-    description: str | None = Field(max_length=250, default=None)
+    description: str | None = None
     sources: list[TransferBase] | None = None
     deal: DealRefundResponse | None = None
     refund_method: PaymentMethodRefundUnion | None = None

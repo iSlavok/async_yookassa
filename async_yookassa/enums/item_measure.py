@@ -1,7 +1,7 @@
-from enum import StrEnum
+from async_yookassa.enums.base import OpenStrEnum
 
 
-class ItemMeasureEnum(StrEnum):
+class ItemMeasureEnum(OpenStrEnum):
     """
     Мера количества предмета расчета (Тег в 54 ФЗ — 2108).
     Используется в параметре measure массива items.

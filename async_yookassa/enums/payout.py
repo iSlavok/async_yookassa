@@ -1,7 +1,7 @@
-from enum import Enum
+from async_yookassa.enums.base import OpenStrEnum
 
 
-class PayoutTypeEnum(str, Enum):
+class PayoutTypeEnum(OpenStrEnum):
     bank_card = "bank_card"
     sbp = "sbp"
     yoo_money = "yoo_money"

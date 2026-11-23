@@ -1,6 +1,6 @@
 import re
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, field_validator
 
 from async_yookassa.enums.payment import CardSource, CardType
 from async_yookassa.models.base import ModelConfigBase
@@ -9,15 +9,18 @@ from async_yookassa.models.payment.methods.card_product import (
 )
 
 
+def _check(pattern: str, value: object, message: str) -> str:
+    if not isinstance(value, str) or not re.match(pattern, value):
+        raise ValueError(message)
+    return value
+
+
 class CardBase(BaseModel):
     number: str
 
     @field_validator("number", mode="before")
-    def validate_number(cls, value: str) -> str:
-        if not re.match("^[0-9]{14,19}$", value):
-            raise ValueError("Invalid card number value")
-
-        return value
+    def validate_number(cls, value: object) -> str:
+        return _check("^[0-9]{14,19}$", value, "Invalid card number value")
 
 
 class CardRequest(CardBase):
@@ -27,63 +30,44 @@ class CardRequest(CardBase):
     csc: str | None = None
 
     @field_validator("expiry_year", mode="before")
-    def validate_expiry_year(cls, value: str) -> str:
-        if not re.match("^[0-9]{4}$", value):
-            raise ValueError("Invalid expiry year value")
-
-        return value
+    def validate_expiry_year(cls, value: object) -> str:
+        return _check("^[0-9]{4}$", value, "Invalid expiry year value")
 
     @field_validator("expiry_month", mode="before")
-    def validate_expiry_month(cls, value: str) -> str:
-        if not re.match("^[0-9]{2}$", value):
+    def validate_expiry_month(cls, value: object) -> str:
+        if not isinstance(value, str) or not re.match("^[0-9]{2}$", value) or not 1 <= int(value) <= 12:
             raise ValueError("Invalid expiry month value")
 
         return value
 
     @field_validator("cardholder", mode="before")
-    def validate_cardholder(cls, value: str | None) -> str | None:
+    def validate_cardholder(cls, value: object) -> str | None:
         if value is None:
             return None
 
-        if not re.match("^[a-zA-Z '-]{0,26}$", value):
-            raise ValueError("Invalid cardholder value")
-
-        return value
+        return _check("^[a-zA-Z '-]{0,26}$", value, "Invalid cardholder value")
 
     @field_validator("csc", mode="before")
-    def validate_csc(cls, value: str | None) -> str | None:
+    def validate_csc(cls, value: object) -> str | None:
         if value is None:
             return None
 
-        if not re.match("^[0-9]{3,4}$", value):
-            raise ValueError("Invalid csc value")
-
-        return value
+        return _check("^[0-9]{3,4}$", value, "Invalid csc value")
 
 
 class CardResponseBase(ModelConfigBase):
+    """
+    Данные карты из ответа ЮKassa.
+
+    Форматы здесь намеренно не проверяются: это данные ЮKassa, а не наши, и строгая
+    проверка ответа только превращает любую неожиданность в отказ разобрать платёж.
+    """
+
     first6: str | None = None
     last4: str
     card_type: CardType
-    issuer_country: str | None = Field(min_length=2, max_length=2, default=None)
+    issuer_country: str | None = None
     issuer_name: str | None = None
-
-    @field_validator("first6", mode="before")
-    def validate_first6(cls, value: str | None) -> str | None:
-        if value is None:
-            return None
-
-        if not re.match("^[0-9]{6}$", value):
-            raise ValueError("Invalid first6 value")
-
-        return value
-
-    @field_validator("last4", mode="before")
-    def validate_last4(cls, value: str) -> str:
-        if not re.match(r"^\d{4}$", value):
-            raise ValueError("Invalid last4 value")
-
-        return value
 
 
 class CardResponse(CardResponseBase):
@@ -91,17 +75,3 @@ class CardResponse(CardResponseBase):
     expiry_month: str
     card_product: CardProduct | None = None
     source: CardSource | None = None
-
-    @field_validator("expiry_year", mode="before")
-    def validate_expiry_year(cls, value: str) -> str:
-        if not re.match(r"^\d{4}$", value) and 2000 < int(value) < 2200:
-            raise ValueError("Invalid card expiry year value")
-
-        return value
-
-    @field_validator("expiry_month", mode="before")
-    def validate_expiry_month(cls, value: str) -> str:
-        if not re.match(r"^\d{2}$", value) and 0 < int(value) <= 12:
-            raise ValueError("Invalid card expiry month value")
-
-        return value

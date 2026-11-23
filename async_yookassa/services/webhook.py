@@ -54,7 +54,7 @@ class WebhookService(BaseService):
             body=body,
             idempotency_key=idempotency_key,
         )
-        return WebhookResponse(**response)
+        return self._parse(WebhookResponse, response)
 
     async def delete(
         self,
@@ -83,4 +83,4 @@ class WebhookService(BaseService):
         :return: Объект ответа WebhookListResponse
         """
         response = await self._get(self.BASE_PATH)
-        return WebhookListResponse(**response)
+        return self._parse(WebhookListResponse, response)

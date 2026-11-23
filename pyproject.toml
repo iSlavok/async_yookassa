@@ -1,6 +1,6 @@
 [project]
 name = "async_yookassa"
-version = "1.0.2"
+version = "1.1.0"
 description = "Unofficial API client for YooKassa"
 authors = [{ name = "prodream", email = "sushkoos@gmail.com" }]
 requires-python = ">=3.11,<3.15"
@@ -25,6 +25,7 @@ Repository = "https://github.com/proDreams/async_yookassa"
 [dependency-groups]
 dev = [
     "pre-commit>=4.5.1",
+    "pytest>=9.2.0",
     "ruff>=0.14.11",
     "ty>=0.0.11",
 ]

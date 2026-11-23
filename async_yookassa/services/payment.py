@@ -50,7 +50,7 @@ class PaymentService(BaseService):
             raise ValueError("Invalid payment_id value")
 
         response = await self._get(f"{self.BASE_PATH}/{payment_id}")
-        return PaymentResponse(**response)
+        return self._parse(PaymentResponse, response)
 
     async def create(
         self,
@@ -79,7 +79,7 @@ class PaymentService(BaseService):
             body=body,
             idempotency_key=idempotency_key,
         )
-        return PaymentResponse(**response)
+        return self._parse(PaymentResponse, response)
 
     async def capture(
         self,
@@ -113,7 +113,7 @@ class PaymentService(BaseService):
             body=body,
             idempotency_key=idempotency_key,
         )
-        return PaymentResponse(**response)
+        return self._parse(PaymentResponse, response)
 
     async def cancel(
         self,
@@ -134,7 +134,7 @@ class PaymentService(BaseService):
             f"{self.BASE_PATH}/{payment_id}/cancel",
             idempotency_key=idempotency_key,
         )
-        return PaymentResponse(**response)
+        return self._parse(PaymentResponse, response)
 
     async def list(
         self,
@@ -150,7 +150,7 @@ class PaymentService(BaseService):
             params = params.model_dump(mode="json", by_alias=True, exclude_none=True)
 
         response = await self._get(self.BASE_PATH, query_params=params)
-        return PaymentListResponse(**response)
+        return self._parse(PaymentListResponse, response)
 
     def _add_cms_metadata(self, request: PaymentRequest) -> PaymentRequest:
         """Добавляет информацию о CMS в метаданные платежа."""
