@@ -27,6 +27,9 @@ jobs:
       - name: Lint pre-commit
         run: uv run pre-commit run --all-files
 
+      - name: Tests
+        run: uv run pytest -q
+
       - name: Run Telegram Notify Action
         uses: proDreams/actions-telegram-notifier@main
         if: always()

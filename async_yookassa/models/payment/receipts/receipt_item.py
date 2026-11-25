@@ -88,14 +88,17 @@ class ReceiptItemBase(ModelConfigBase):
         return str(quantized)
 
     @field_validator("mark_mode", mode="before")
-    def mark_mode_validator(cls, value: str) -> str:
+    def mark_mode_validator(cls, value: object) -> str | None:
         """
         Устанавливает mark_mode модели ReceiptItem.
 
         :param value: mark_mode модели ReceiptItem.
         :type value: str
         """
-        if not re.search(r"^0$", value):
+        if value is None:
+            return None
+
+        if not isinstance(value, str) or not re.search(r"^0$", value):
             raise ValueError(r"Invalid value for `mark_mode`, must be a follow pattern or equal to `/^0$/`")
 
         return value

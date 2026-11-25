@@ -229,6 +229,37 @@ class PaymentsProvider(Provider):
         )
 ```
 
+### Новые значения в ответах API
+
+ЮKassa регулярно добавляет способы оплаты, статусы, причины отмены и события вебхуков.
+Ответы и уведомления разбираются так, чтобы новое значение не роняло весь объект:
+
+- незнакомый способ оплаты разбирается в `UnknownPaymentMethod` (все поля сохраняются, лишние — в `model_extra`);
+  так же устроены сценарии подтверждения, данные об НДС, получатели выплат, способы доставки счёта и возврата;
+- незнакомое событие вебхука разбирается в `UnknownWebhookNotification`, объект события остаётся словарём;
+- перечисления в ответах «открытые»: незнакомая строка становится значением с тем же текстом, а не ошибкой.
+
+Если ответ всё же не удалось разобрать, сервис бросает `ResponseParsingError` (подкласс `APIError`)
+с исходным ответом в `raw`: запрос уже выполнен, и из ответа можно достать хотя бы `id`.
+
+```python
+from pydantic import TypeAdapter
+
+from async_yookassa.models.webhook.notification import (
+    PaymentWebhookNotification,
+    UnknownWebhookNotification,
+    WebhookNotification,
+)
+
+notification = TypeAdapter(WebhookNotification).validate_python(body)
+if isinstance(notification, PaymentWebhookNotification):
+    ...
+elif isinstance(notification, UnknownWebhookNotification):
+    logger.info(f"Unhandled YooKassa event {notification.event}")
+```
+
+Перечисления сверяются с официальной OpenAPI-спецификацией тестом `tests/test_spec_contract.py`.
+
 ### Структура проекта
 
 Библиотека разделена на модули для удобства:

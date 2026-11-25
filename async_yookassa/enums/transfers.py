@@ -1,7 +1,7 @@
-from enum import Enum
+from async_yookassa.enums.base import OpenStrEnum
 
 
-class TransferStatusEnum(str, Enum):
+class TransferStatusEnum(OpenStrEnum):
     pending = "pending"
     waiting_for_capture = "waiting_for_capture"
     succeeded = "succeeded"

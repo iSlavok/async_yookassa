@@ -4,12 +4,17 @@ from __future__ import annotations
 
 import uuid
 from abc import ABC
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, TypeVar
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
+
+from async_yookassa.exceptions.response_parsing_error import ResponseParsingError
 
 if TYPE_CHECKING:
     from async_yookassa._http import HttpClient
+
+# requires-python >= 3.11: синтаксис `def f[T]` недоступен.
+ModelT = TypeVar("ModelT", bound=BaseModel)
 
 
 class BaseService(ABC):
@@ -78,6 +83,19 @@ class BaseService(ABC):
         if idempotency_key is None:
             idempotency_key = uuid.uuid4()
         return {"Idempotence-Key": str(idempotency_key)}
+
+    @staticmethod
+    def _parse(model: type[ModelT], response: dict[str, Any]) -> ModelT:
+        """
+        Разбирает ответ ЮKassa в модель.
+
+        Ошибка разбора отдаётся как ``ResponseParsingError`` (подкласс ``APIError``) с исходным
+        ответом: вызывающий код, ловящий ``APIError``, увидит её, а не голый ``ValidationError``.
+        """
+        try:
+            return model.model_validate(response)
+        except ValidationError as error:
+            raise ResponseParsingError(model, response, str(error)) from error
 
     @staticmethod
     def _serialize_request(request: BaseModel) -> dict[str, Any]:

@@ -1,6 +1,6 @@
-from enum import Enum
+from async_yookassa.enums.base import OpenStrEnum
 
 
-class ReceiptType(str, Enum):
+class ReceiptType(OpenStrEnum):
     payment = "payment"
     refund = "refund"

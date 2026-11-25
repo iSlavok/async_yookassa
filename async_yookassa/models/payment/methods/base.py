@@ -1,10 +1,11 @@
-import re
 from datetime import datetime
-from typing import Annotated, Any, Literal, Union
+from typing import Annotated, Literal, Union
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, Tag
 
 from async_yookassa.enums.payment import PaymentMethodStatus, PaymentMethodType
+from async_yookassa.models.base import ModelConfigBase
+from async_yookassa.models.discriminator import UNKNOWN_TAG, open_discriminator
 from async_yookassa.models.payment.amount import Amount
 from async_yookassa.models.payment.methods.articles import (
     ArticleRefund,
@@ -37,31 +38,9 @@ class PaymentMethodBase(BaseModel):
 class SberLoanPaymentMethod(PaymentMethodBase):
     type: Literal[PaymentMethodType.sber_loan]
     discount_amount: Amount | None = None
+    # `loan` или `installments_N` на сегодня; по спецификации — просто строка.
     loan_option: str | None = None
     suspended_until: datetime | None = None
-
-    @field_validator("loan_option", mode="before")
-    def validate_loan_option(cls, value: Any) -> str | None:
-        if value is None:
-            return None
-
-        if not isinstance(value, str):
-            raise ValueError("Value must be a string")
-
-        if value == "loan":
-            return value
-
-        match_pattern = re.match(r"^installments_(\d+)$", value)
-
-        if not match_pattern:
-            raise ValueError("Value must be 'loan' or format 'installments_XX'")
-
-        months = int(match_pattern.group(1))
-
-        if months < 1:
-            raise ValueError("Installment months must be greater than 0")
-
-        return value
 
 
 class AlfabankPaymentMethod(PaymentMethodBase):
@@ -85,6 +64,11 @@ class GenericPaymentMethod(PaymentMethodBase):
 
 class BankCardPaymentMethod(PaymentMethodBase):
     type: Literal[PaymentMethodType.bank_card]
+    card: CardResponse | None = None
+
+
+class AlfaPayPaymentMethod(PaymentMethodBase):
+    type: Literal[PaymentMethodType.alfa_pay]
     card: CardResponse | None = None
 
 
@@ -113,7 +97,11 @@ class ElectronicCertificatePaymentMethodResponse(ElectronicCertificatePaymentMet
     articles: list[ArticleResponse] | None = None
 
 
-class ElectronicCertificatePaymentMethodRefund(ElectronicCertificatePaymentMethodBase):
+class ElectronicCertificatePaymentMethodRefund(ModelConfigBase):
+    """Возврат на электронный сертификат: и в запросе возврата, и в ответе."""
+
+    type: Literal[PaymentMethodType.electronic_certificate]
+    electronic_certificate: ElectronicCertificate | None = None
     articles: list[ArticleRefund] | None = None
 
 
@@ -131,21 +119,55 @@ class TPayPaymentMethod(BankCardPaymentMethod):
     type: Literal[PaymentMethodType.tinkoff_bank]
 
 
+class UnknownPaymentMethod(BaseModel):
+    """
+    Способ оплаты, которого эта версия библиотеки ещё не знает.
+
+    Нужен, чтобы новый способ оплаты в ЮKassa не ломал разбор всего платежа.
+    Все поля ответа сохраняются: известные базовые — как атрибуты, остальные — в ``model_extra``.
+    """
+
+    type: str
+    id: str | None = None
+    saved: bool | None = None
+    status: PaymentMethodStatus | None = None
+    title: str | None = None
+
+    model_config = ConfigDict(extra="allow", use_enum_values=True)
+
+
+_PAYMENT_METHODS = (
+    SberLoanPaymentMethod,
+    AlfabankPaymentMethod,
+    AlfaPayPaymentMethod,
+    BankCardPaymentMethod,
+    SBPPaymentMethodResponse,
+    B2BSberbankPaymentMethod,
+    ElectronicCertificatePaymentMethodResponse,
+    YooMoneyPaymentMethod,
+    SberPayPaymentMethod,
+    TPayPaymentMethod,
+    GenericPaymentMethod,
+)
+
 PaymentMethodUnion = Annotated[
     Union[
-        SberLoanPaymentMethod,
-        AlfabankPaymentMethod,
-        BankCardPaymentMethod,
-        SBPPaymentMethodResponse,
-        B2BSberbankPaymentMethod,
-        ElectronicCertificatePaymentMethodResponse,
-        YooMoneyPaymentMethod,
-        SberPayPaymentMethod,
-        TPayPaymentMethod,
-        GenericPaymentMethod,
+        Annotated[SberLoanPaymentMethod, Tag("SberLoanPaymentMethod")],
+        Annotated[AlfabankPaymentMethod, Tag("AlfabankPaymentMethod")],
+        Annotated[AlfaPayPaymentMethod, Tag("AlfaPayPaymentMethod")],
+        Annotated[BankCardPaymentMethod, Tag("BankCardPaymentMethod")],
+        Annotated[SBPPaymentMethodResponse, Tag("SBPPaymentMethodResponse")],
+        Annotated[B2BSberbankPaymentMethod, Tag("B2BSberbankPaymentMethod")],
+        Annotated[ElectronicCertificatePaymentMethodResponse, Tag("ElectronicCertificatePaymentMethodResponse")],
+        Annotated[YooMoneyPaymentMethod, Tag("YooMoneyPaymentMethod")],
+        Annotated[SberPayPaymentMethod, Tag("SberPayPaymentMethod")],
+        Annotated[TPayPaymentMethod, Tag("TPayPaymentMethod")],
+        Annotated[GenericPaymentMethod, Tag("GenericPaymentMethod")],
+        Annotated[UnknownPaymentMethod, Tag(UNKNOWN_TAG)],
     ],
-    Field(discriminator="type"),
+    open_discriminator("type", *_PAYMENT_METHODS),
 ]
+
 
 class SBPRefundMethod(BaseModel):
     type: Literal[PaymentMethodType.sbp]
@@ -154,7 +176,19 @@ class SBPRefundMethod(BaseModel):
     model_config = ConfigDict(use_enum_values=True)
 
 
+class UnknownRefundMethod(BaseModel):
+    """Способ возврата, которого эта версия библиотеки ещё не знает."""
+
+    type: str
+
+    model_config = ConfigDict(extra="allow")
+
+
 PaymentMethodRefundUnion = Annotated[
-    Union[SBPRefundMethod, ElectronicCertificatePaymentMethodRefund],
-    Field(discriminator="type"),
+    Union[
+        Annotated[SBPRefundMethod, Tag("SBPRefundMethod")],
+        Annotated[ElectronicCertificatePaymentMethodRefund, Tag("ElectronicCertificatePaymentMethodRefund")],
+        Annotated[UnknownRefundMethod, Tag(UNKNOWN_TAG)],
+    ],
+    open_discriminator("type", SBPRefundMethod, ElectronicCertificatePaymentMethodRefund),
 ]

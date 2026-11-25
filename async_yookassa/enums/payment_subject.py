@@ -1,7 +1,7 @@
-from enum import StrEnum
+from async_yookassa.enums.base import OpenStrEnum
 
 
-class PaymentSubjectEnum(StrEnum):
+class PaymentSubjectEnum(OpenStrEnum):
     COMMODITY = "commodity"
     EXCISE = "excise"
     JOB = "job"
@@ -37,7 +37,7 @@ class PaymentSubjectEnum(StrEnum):
     ANOTHER = "another"
 
 
-class PaymentModeEnum(StrEnum):
+class PaymentModeEnum(OpenStrEnum):
     FULL_PREPAYMENT = "full_prepayment"
     FULL_PAYMENT = "full_payment"
     PARTIAL_PREPAYMENT = "partial_prepayment"

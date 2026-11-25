@@ -1,9 +1,10 @@
-from typing import Annotated, Literal, Union
+from typing import Annotated, Any, Literal, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, Tag
 
 from async_yookassa.enums.webhook_event import WebhookEvent
 from async_yookassa.models.deal import DealResponse
+from async_yookassa.models.discriminator import UNKNOWN_TAG, open_discriminator
 from async_yookassa.models.payment import PaymentResponse
 from async_yookassa.models.payment_method import PaymentMethodResponse
 from async_yookassa.models.payout import PayoutResponse
@@ -99,13 +100,34 @@ class PaymentMethodWebhookNotification(BaseWebhookNotification):
     )
 
 
+class UnknownWebhookNotification(BaseWebhookNotification):
+    """
+    Уведомление о событии, которого эта версия библиотеки ещё не знает.
+
+    Объект события не разбирается: его модель неизвестна, поэтому он остаётся словарём.
+    """
+
+    event: str = Field(title="Тип события")
+    object: dict[str, Any] = Field(title="Объект события")
+
+    model_config = ConfigDict(extra="allow")
+
+
 WebhookNotification = Annotated[
     Union[
+        Annotated[PaymentWebhookNotification, Tag("PaymentWebhookNotification")],
+        Annotated[RefundWebhookNotification, Tag("RefundWebhookNotification")],
+        Annotated[PayoutWebhookNotification, Tag("PayoutWebhookNotification")],
+        Annotated[DealWebhookNotification, Tag("DealWebhookNotification")],
+        Annotated[PaymentMethodWebhookNotification, Tag("PaymentMethodWebhookNotification")],
+        Annotated[UnknownWebhookNotification, Tag(UNKNOWN_TAG)],
+    ],
+    open_discriminator(
+        "event",
         PaymentWebhookNotification,
         RefundWebhookNotification,
         PayoutWebhookNotification,
         DealWebhookNotification,
         PaymentMethodWebhookNotification,
-    ],
-    Field(discriminator="event"),
+    ),
 ]

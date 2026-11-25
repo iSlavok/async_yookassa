@@ -35,7 +35,7 @@ class PaymentMethodsService(BaseService):
             raise ValueError("Invalid payment_method_id value")
 
         response = await self._get(f"{self.BASE_PATH}/{payment_method_id}")
-        return PaymentMethodResponse(**response)
+        return self._parse(PaymentMethodResponse, response)
 
     async def create(
         self,
@@ -61,4 +61,4 @@ class PaymentMethodsService(BaseService):
             body=body,
             idempotency_key=idempotency_key,
         )
-        return PaymentMethodResponse(**response)
+        return self._parse(PaymentMethodResponse, response)

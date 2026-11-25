@@ -22,12 +22,13 @@ from async_yookassa.models.payment.transfers import TransferResponse
 
 
 class PaymentResponse(ModelConfigBase):
-    id: str = Field(min_length=36, max_length=36)
+    id: str
     status: PaymentStatus
     amount: Amount
     income_amount: Amount | None = None
-    description: str | None = Field(max_length=128, default=None)
-    recipient: RecipientResponse
+    description: str | None = None
+    # По спецификации обязателен, но в примерах вебхуков из документации его нет.
+    recipient: RecipientResponse | None = None
     payment_method: PaymentMethodUnion | None = None
     captured_at: datetime | None = None
     created_at: datetime
@@ -43,7 +44,7 @@ class PaymentResponse(ModelConfigBase):
     authorization_details: AuthorizationDetails | None = None
     transfers: list[TransferResponse] | None = None
     deal: Deal | None = None
-    merchant_customer_id: str | None = Field(max_length=200, default=None)
+    merchant_customer_id: str | None = None
     invoice_details: InvoiceDetails | None = None
 
 

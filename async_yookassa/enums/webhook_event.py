@@ -1,7 +1,7 @@
-from enum import StrEnum
+from async_yookassa.enums.base import OpenStrEnum
 
 
-class WebhookEvent(StrEnum):
+class WebhookEvent(OpenStrEnum):
     PAYMENT_WAITING_FOR_CAPTURE = "payment.waiting_for_capture"
     PAYMENT_SUCCEEDED = "payment.succeeded"
     PAYMENT_CANCELED = "payment.canceled"

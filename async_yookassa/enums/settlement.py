@@ -1,11 +1,11 @@
-from enum import StrEnum
+from async_yookassa.enums.base import OpenStrEnum
 
 
-class SettlementTypeEnum(StrEnum):
+class SettlementTypeEnum(OpenStrEnum):
     payout = "payout"
 
 
-class SettlementReceiptEnum(StrEnum):
+class SettlementReceiptEnum(OpenStrEnum):
     cashless = "cashless"
     prepayment = "prepayment"
     postpayment = "postpayment"

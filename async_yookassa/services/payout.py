@@ -42,7 +42,7 @@ class PayoutService(BaseService):
             raise ValueError("Invalid payout_id value")
 
         response = await self._get(f"{self.BASE_PATH}/{payout_id}")
-        return PayoutResponse(**response)
+        return self._parse(PayoutResponse, response)
 
     async def find(self, params: dict[str, Any] | PayoutSearchOptions | None = None) -> PayoutListResponse:
         """
@@ -56,7 +56,7 @@ class PayoutService(BaseService):
             params = params.model_dump(mode="json", by_alias=True, exclude_none=True)
 
         response = await self._get(f"{self.BASE_PATH}/search", query_params=params)
-        return PayoutListResponse(**response)
+        return self._parse(PayoutListResponse, response)
 
     async def create(
         self,
@@ -83,7 +83,7 @@ class PayoutService(BaseService):
             body=body,
             idempotency_key=idempotency_key,
         )
-        return PayoutResponse(**response)
+        return self._parse(PayoutResponse, response)
 
     async def list(self, params: dict[str, Any] | PayoutListOptions | None = None) -> PayoutListResponse:
         """
@@ -97,4 +97,4 @@ class PayoutService(BaseService):
             params = params.model_dump(mode="json", by_alias=True, exclude_none=True)
 
         response = await self._get(self.BASE_PATH, query_params=params)
-        return PayoutListResponse(**response)
+        return self._parse(PayoutListResponse, response)

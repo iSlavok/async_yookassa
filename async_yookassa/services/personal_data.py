@@ -40,7 +40,7 @@ class PersonalDataService(BaseService):
             raise ValueError("Invalid payout_id value")
 
         response = await self._get(f"{self.BASE_PATH}/{personal_data_id}")
-        return PersonalDataResponse(**response)
+        return self._parse(PersonalDataResponse, response)
 
     async def create(
         self,
@@ -67,4 +67,4 @@ class PersonalDataService(BaseService):
             body=body,
             idempotency_key=idempotency_key,
         )
-        return PersonalDataResponse(**response)
+        return self._parse(PersonalDataResponse, response)

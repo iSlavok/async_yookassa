@@ -38,7 +38,7 @@ class RefundService(BaseService):
             raise ValueError("Invalid refund_id value")
 
         response = await self._get(f"{self.BASE_PATH}/{refund_id}")
-        return RefundResponse(**response)
+        return self._parse(RefundResponse, response)
 
     async def create(
         self,
@@ -64,7 +64,7 @@ class RefundService(BaseService):
             body=body,
             idempotency_key=idempotency_key,
         )
-        return RefundResponse(**response)
+        return self._parse(RefundResponse, response)
 
     async def list(
         self,
@@ -80,4 +80,4 @@ class RefundService(BaseService):
             params = params.model_dump(mode="json", by_alias=True, exclude_none=True)
 
         response = await self._get(self.BASE_PATH, query_params=params)
-        return RefundListResponse(**response)
+        return self._parse(RefundListResponse, response)

@@ -38,7 +38,7 @@ class ReceiptService(BaseService):
             raise ValueError("Invalid receipt_id value")
 
         response = await self._get(f"{self.BASE_PATH}/{receipt_id}")
-        return ReceiptResponse(**response)
+        return self._parse(ReceiptResponse, response)
 
     async def create(
         self, params: dict[str, Any] | ReceiptRequest, idempotency_key: uuid.UUID | None = None
@@ -62,7 +62,7 @@ class ReceiptService(BaseService):
             body=body,
             idempotency_key=idempotency_key,
         )
-        return ReceiptResponse(**response)
+        return self._parse(ReceiptResponse, response)
 
     async def list(self, params: dict[str, Any] | ReceiptListOptions | None = None) -> ReceiptListResponse:
         """
@@ -76,4 +76,4 @@ class ReceiptService(BaseService):
             params = params.model_dump(mode="json", by_alias=True, exclude_none=True)
 
         response = await self._get(self.BASE_PATH, query_params=params)
-        return ReceiptListResponse(**response)
+        return self._parse(ReceiptListResponse, response)

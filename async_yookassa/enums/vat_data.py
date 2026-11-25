@@ -1,13 +1,13 @@
-from enum import Enum
+from async_yookassa.enums.base import OpenStrEnum
 
 
-class VatDataTypeEnum(str, Enum):
+class VatDataTypeEnum(OpenStrEnum):
     untaxed = "untaxed"
     calculated = "calculated"
     mixed = "mixed"
 
 
-class RateEnum(str, Enum):
+class RateEnum(OpenStrEnum):
     five = "5"
     seven = "7"
     ten = "10"

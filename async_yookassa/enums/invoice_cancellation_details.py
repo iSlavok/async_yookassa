@@ -1,12 +1,12 @@
-from enum import Enum
+from async_yookassa.enums.base import OpenStrEnum
 
 
-class InvoicePartyEnum(str, Enum):
+class InvoicePartyEnum(OpenStrEnum):
     yoo_money = "yoo_money"
     merchant = "merchant"
 
 
-class InvoiceReasonEnum(str, Enum):
+class InvoiceReasonEnum(OpenStrEnum):
     invoice_canceled = "invoice_canceled"
     invoice_expired = "invoice_expired"
     general_decline = "general_decline"

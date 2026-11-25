@@ -1,9 +1,10 @@
 from typing import Annotated, Literal, Union
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, Tag
 
 from async_yookassa.enums.payment import ConfirmationType
 from async_yookassa.models.base import ModelConfigBase
+from async_yookassa.models.discriminator import UNKNOWN_TAG, open_discriminator
 
 
 class ExternalConfirmation(ModelConfigBase):
@@ -31,15 +32,31 @@ class RedirectConfirmation(MobileApplicationConfirmation):
     return_url: str | None = Field(max_length=2048, default=None)
 
 
+class UnknownConfirmation(BaseModel):
+    """Сценарий подтверждения, которого эта версия библиотеки ещё не знает."""
+
+    type: str
+
+    model_config = ConfigDict(extra="allow")
+
+
 ConfirmationUnion = Annotated[
     Union[
+        Annotated[ExternalConfirmation, Tag("ExternalConfirmation")],
+        Annotated[EmbeddedConfirmation, Tag("EmbeddedConfirmation")],
+        Annotated[MobileApplicationConfirmation, Tag("MobileApplicationConfirmation")],
+        Annotated[QRConfirmation, Tag("QRConfirmation")],
+        Annotated[RedirectConfirmation, Tag("RedirectConfirmation")],
+        Annotated[UnknownConfirmation, Tag(UNKNOWN_TAG)],
+    ],
+    open_discriminator(
+        "type",
         ExternalConfirmation,
         EmbeddedConfirmation,
         MobileApplicationConfirmation,
         QRConfirmation,
         RedirectConfirmation,
-    ],
-    Field(discriminator="type"),
+    ),
 ]
 
 

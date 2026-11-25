@@ -1,7 +1,7 @@
-from enum import StrEnum
+from async_yookassa.enums.base import OpenStrEnum
 
 
-class DeliveryMethodType(StrEnum):
+class DeliveryMethodType(OpenStrEnum):
     SELF = "self"
     SMS = "sms"
     EMAIL = "email"
